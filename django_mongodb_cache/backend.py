@@ -124,8 +124,18 @@ class MongoDBCache(BaseDatabaseCache):
 
     def _collection_for_read(self):
         db = router.db_for_read(self.cache_model_class)
-        return connections[db].database[self._table]
+        try:
+            return connections[db].database[self._table]
+        except (AttributeError):
+            connections[db]._connect()
+            return connections[db].database[self._table]
+
 
     def _collection_for_write(self):
         db = router.db_for_write(self.cache_model_class)
-        return connections[db].database[self._table]
+        try:
+            return connections[db].database[self._table]
+        except (AttributeError):
+            connections[db]._connect()
+            return connections[db].database[self._table]
+
