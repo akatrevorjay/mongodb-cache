@@ -123,19 +123,26 @@ class MongoDBCache(BaseDatabaseCache):
             collection.remove({'e' : {'$lt' : cut['e']}}, safe=True)
 
     def _collection_for_read(self):
-        db = router.db_for_read(self.cache_model_class)
+        #db = router.db_for_read(self.cache_model_class)
+        db = 'mongodb'
         try:
             return connections[db].database[self._table]
         except (AttributeError):
-            connections[db]._connect()
-            return connections[db].database[self._table]
-
+            try:
+                connections[db]._connect()
+                return connections[db].database[self._table]
+            except (AttributeError):
+                pass
 
     def _collection_for_write(self):
-        db = router.db_for_write(self.cache_model_class)
+        #db = router.db_for_write(self.cache_model_class)
+        db = 'mongodb'
         try:
             return connections[db].database[self._table]
         except (AttributeError):
-            connections[db]._connect()
-            return connections[db].database[self._table]
+            try:
+                connections[db]._connect()
+                return connections[db].database[self._table]
+            except (AttributeError):
+                pass
 
